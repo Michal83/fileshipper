@@ -8,11 +8,11 @@
 
 <script>
 import * as filestack from 'filestack-js';
+import config from './config/config.js';
 import Picker from './components/Picker.vue';
 import FilesList from './components/FilesList';
 
-const API_KEY = 'AW48Nu8ITveYojVEGHFrgz';
-const filestackClient = filestack.init(API_KEY);
+const filestackClient = filestack.init(config.API_KEY);
 
 export default {
   name: 'app',
@@ -31,8 +31,10 @@ export default {
       for (let file of newFiles) {
         file.handle = null;
         file.error = null;
+        file.percentUploaded = 0;
+        file.bytesUploaded = 0;
         this.files.push(file);
-      };
+      }
     },
     uploadFiles() {
       this.lock = true;
@@ -41,20 +43,25 @@ export default {
       });
     },
     uploadSingleFile(file) {
-      filestackClient.upload(file, { onProgress: this.onProgress }, {}, {})
+      filestackClient.upload(file, { onProgress: this.onProgress(file) }, {}, {})
           .then(res => {
             file.handle = res.handle;
-            //HACK FOR REFRESH
-            this.files.splice();
+            this.refreshFiles();
           })
           .catch(err => {
             file.error = err;
-            //HACK FOR REFRESH
-            this.files.splice();
+            this.refreshFiles();
           });
     },
-    onProgress(event) {
-      console.log(event);
+    onProgress(file) {
+      return event => {
+        file.percentUploaded = event.totalPercent;
+        file.bytesUploaded = event.totalBytes;
+        this.refreshFiles();
+      }
+    },
+    refreshFiles() {
+      this.files.splice();
     }
   }
 }

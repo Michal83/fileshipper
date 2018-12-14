@@ -1,6 +1,6 @@
 <template>
   <div class="files-list">
-    <div class="file" v-for="(file, i) in files" :key="i" :class="{error: file.error, uploaded: file.handle}">
+    <div class="file" :style="{'background': getPercentBar(file)}" v-for="(file, i) in files" :key="i" :class="{error: file.error, uploaded: file.handle}">
       <img class="thumbnail" :src="getImagePath(file)" alt="image thumbnail">        
       <div class="name">{{ file.name }}</div>
       <div class="btn-remove" v-show="!lock" @click="$delete(files, i)">&times;</div>
@@ -14,6 +14,13 @@ export default {
   methods: {
     getImagePath(file) {
       return URL.createObjectURL(file);
+    },
+    getPercentBar(file) {
+      if (file.percentUploaded == 0) {
+        return null;
+      };
+
+      return 'linear-gradient(90deg, rgba(33, 235, 15, .2) ' + file.percentUploaded + '%, #fff ' + (100 - file.percentUploaded) + '%)';
     }
   }
 }
@@ -63,10 +70,12 @@ export default {
 }
 
 .uploaded {
+  background: none;
   background-color: rgba(33, 235, 15, .2);
 }
 
 .error {
+  background: none;
   background-color: rgba(255, 0, 0, .2);
 }
 </style>
