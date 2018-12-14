@@ -1,18 +1,18 @@
 <template>
   <div id="app">
     <picker v-on:add-files="addFiles" />
-    <files-list v-bind:files="files" />
-    <div v-show="files.length > 0" class="btn-upload">Upload</div>
+    <files-list v-bind:files="files" v-bind:lock="lock" />
+    <button class="btn-upload" v-show="files.length > 0" :class="{locked: lock}" @click="uploadFiles" :disabled="lock">Upload</button>
   </div>
 </template>
 
 <script>
-// import * as filestack from 'filestack-js';
+import * as filestack from 'filestack-js';
 import Picker from './components/Picker.vue';
 import FilesList from './components/FilesList';
 
-// const API_KEY = 'AW48Nu8ITveYojVEGHFrgz';
-// const filestackClient = filestack.init(API_KEY);
+const API_KEY = 'AW48Nu8ITveYojVEGHFrgz';
+const filestackClient = filestack.init(API_KEY);
 
 export default {
   name: 'app',
@@ -22,13 +22,29 @@ export default {
   },
   data() {
     return {
-      files: []
+      files: [],
+      lock: false
     }
   },
   methods: {
     addFiles(newFiles) {
       this.files.push(...newFiles);
-      console.log(this.files);
+    },
+    uploadFiles() {
+      this.lock = true;
+      this.files.forEach(file => {
+        this.uploadSingleFile(file);
+      });
+    },
+    uploadSingleFile(file) {
+      filestackClient.upload(file, { onProgress: this.onProgress }, {}, {})
+          .then(res => {
+            console.log(this.files);
+          })
+          .catch(err => console.log('ERROR ', err));
+    },
+    onProgress(event) {
+      console.log(event);
     }
   }
 }
@@ -55,10 +71,20 @@ export default {
   display: inline-block;
   margin: 1rem auto;
   padding: 2rem;
+  border: none;
 }
 
 .btn-upload:hover {
   cursor: pointer;
   background-color: #0ad1d1;
+}
+
+.locked {
+  background-color: #9d9c9c;
+}
+
+.locked:hover {
+  cursor: default;
+  background-color: #9d9c9c;
 }
 </style>
