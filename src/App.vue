@@ -28,7 +28,11 @@ export default {
   },
   methods: {
     addFiles(newFiles) {
-      this.files.push(...newFiles);
+      for (let file of newFiles) {
+        file.handle = null;
+        file.error = null;
+        this.files.push(file);
+      };
     },
     uploadFiles() {
       this.lock = true;
@@ -39,9 +43,15 @@ export default {
     uploadSingleFile(file) {
       filestackClient.upload(file, { onProgress: this.onProgress }, {}, {})
           .then(res => {
-            console.log(this.files);
+            file.handle = res.handle;
+            //HACK FOR REFRESH
+            this.files.splice();
           })
-          .catch(err => console.log('ERROR ', err));
+          .catch(err => {
+            file.error = err;
+            //HACK FOR REFRESH
+            this.files.splice();
+          });
     },
     onProgress(event) {
       console.log(event);

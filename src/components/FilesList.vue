@@ -1,6 +1,6 @@
 <template>
   <div class="files-list">
-    <div class="file" v-for="(file, i) in files" v-bind:key="i">
+    <div class="file" v-for="(file, i) in files" :key="i" :class="{error: file.error, uploaded: file.handle}">
       <img class="thumbnail" :src="getImagePath(file)" alt="image thumbnail">        
       <div class="name">{{ file.name }}</div>
       <div class="btn-remove" v-show="!lock" @click="$delete(files, i)">&times;</div>
@@ -60,6 +60,14 @@ export default {
 .btn-remove:hover {
   color: #f81414;
   cursor: pointer;
+}
+
+.uploaded {
+  background-color: rgba(33, 235, 15, .2);
+}
+
+.error {
+  background-color: rgba(255, 0, 0, .2);
 }
 </style>
 
