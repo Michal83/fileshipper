@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <picker v-on:add-files="addFiles" />
+    <picker v-on:add-files="addFiles" v-bind:lock="lock" />
     <files-list v-bind:files="files" v-bind:lock="lock" />
     <button class="btn-upload" v-show="files.length > 0" :class="{locked: lock}" @click="uploadFiles" :disabled="lock">Upload</button>
   </div>
@@ -69,16 +69,14 @@ export default {
 
 <style>
 * {
+  font-family: 'Lato', sans-serif;
   box-sizing: border-box
 }
 
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 4rem;
 }
 
 .btn-upload {
