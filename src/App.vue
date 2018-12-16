@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <h1 class="app-name">Fileshipper</h1>
-    <picker v-on:add-files="addFiles" v-bind:lock="lock" />
-    <files-list v-bind:files="files" v-bind:lock="lock" />
-    <button class="btn-upload" v-show="files.length > 0" :class="{locked: lock}" @click="uploadFiles" :disabled="lock">Upload</button>
+    <picker v-on:add-files="addFiles" v-bind:lock="lockPicker" />
+    <files-list v-bind:files="files" v-bind:lock="lockUpload" />
+    <button class="btn-upload" v-show="files.length > 0" :class="{locked: lockUpload || isUploadDone()}" @click="uploadFiles" :disabled="lockUpload || isUploadDone()">Upload</button>
   </div>
 </template>
 
@@ -24,7 +24,8 @@ export default {
   data() {
     return {
       files: [],
-      lock: false
+      lockUpload: false,
+      lockPicker: false,
     }
   },
   methods: {
@@ -38,11 +39,15 @@ export default {
         file.bytesPerSecond = 0;
         this.files.push(file);
       }
+      this.lockUpload = false;
     },
     uploadFiles() {
-      this.lock = true;
+      this.lockPicker = true;
+      this.lockUpload = true;
       this.files.forEach(file => {
-        this.uploadSingleFile(file);
+        if (!file.handle) {
+          this.uploadSingleFile(file);
+        }
       });
     },
     uploadSingleFile(file) {
@@ -58,16 +63,20 @@ export default {
     },
     onProgress(file) {
       return event => {
-        if (event.totalBytes != file.bytesUploaded) {
-          file.bytesPerSecond = (event.totalBytes - file.bytesUploaded) / file.progressInterval;
-        }
+        file.bytesPerSecond = (event.totalBytes - file.bytesUploaded) / file.progressInterval;
         file.percentUploaded = event.totalPercent;
         file.bytesUploaded = event.totalBytes;
         this.refreshFiles();
       }
     },
     refreshFiles() {
+      if (this.isUploadDone()) {
+        this.lockPicker = false; 
+      }
       this.files.splice();
+    },
+    isUploadDone() {
+      return this.files.filter(file => (!file.handle && !file.error)).length == 0;
     }
   }
 }

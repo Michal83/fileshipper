@@ -5,7 +5,7 @@
         <img class="thumbnail" :src="getImagePath(file)" alt="image thumbnail">        
         <div class="filename">{{ file.name }}</div>
       </div>
-      <div class="progress-bar" v-show="lock && !file.error">
+      <div class="progress-bar" v-show="lock && !file.error && !file.handle">
         <p class="percent">{{ file.percentUploaded }}%</p>
         <div class="bar-wrapper">
           <div class="bar" :style="{'width': file.percentUploaded + '%'}"></div>
@@ -13,7 +13,7 @@
         <p class="curr-speed">Current speed: {{ file.bytesPerSecond / 1000 }} kB/s</p>
       </div>
       <div class="err-message" v-show="file.error">There is problem with uploading the file</div>
-      <div class="btn-remove" v-show="!lock && !file.error" @click="$delete(files, i)">&times;</div>
+      <div class="btn-remove" v-show="!lock && !file.error && !file.handle" @click="$delete(files, i)">&times;</div>
     </div>
   </div>
 </template>
