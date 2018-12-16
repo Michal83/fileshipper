@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <h1 class="app-name">Fileshipper</h1>
     <picker v-on:add-files="addFiles" v-bind:lock="lock" />
     <files-list v-bind:files="files" v-bind:lock="lock" />
     <button class="btn-upload" v-show="files.length > 0" :class="{locked: lock}" @click="uploadFiles" :disabled="lock">Upload</button>
@@ -33,6 +34,8 @@ export default {
         file.error = null;
         file.percentUploaded = 0;
         file.bytesUploaded = 0;
+        file.progressInterval = 1;
+        file.bytesPerSecond = 0;
         this.files.push(file);
       }
     },
@@ -43,7 +46,7 @@ export default {
       });
     },
     uploadSingleFile(file) {
-      filestackClient.upload(file, { onProgress: this.onProgress(file) }, {}, {})
+      filestackClient.upload(file, { onProgress: this.onProgress(file), progressInterval: file.progressInterval * 1000 }, {}, {})
           .then(res => {
             file.handle = res.handle;
             this.refreshFiles();
@@ -55,6 +58,9 @@ export default {
     },
     onProgress(file) {
       return event => {
+        if (event.totalBytes != file.bytesUploaded) {
+          file.bytesPerSecond = (event.totalBytes - file.bytesUploaded) / file.progressInterval;
+        }
         file.percentUploaded = event.totalPercent;
         file.bytesUploaded = event.totalBytes;
         this.refreshFiles();
@@ -77,6 +83,12 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 4rem;
+}
+
+.app-name {
+  font-family: 'Lobster', cursive;
+  font-size: 3rem;
+  color: #05567e;
 }
 
 .btn-upload {
