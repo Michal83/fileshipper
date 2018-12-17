@@ -1,5 +1,5 @@
 const config = {
-  API_KEY: 'AW48Nu8ITveYojVEGHFrgz'
+  API_KEY: ''
 };
 
 export default config;

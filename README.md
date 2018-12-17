@@ -3,7 +3,8 @@
 Client for Filestack SDK (https://github.com/filestack/filestack-js)
 
 ## Setup
-Node should be installed
+* Node should be installed
+* Add your Filestack API KEY in config/config.js
 ```
   $ npm install
 ```
