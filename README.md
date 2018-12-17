@@ -1,26 +1,21 @@
-# fileshipper
+# Fileshipper
 
-## Project setup
-```
-npm install
-```
+Client for Filestack SDK (https://github.com/filestack/filestack-js)
 
-### Compiles and hot-reloads for development
+## Setup
+Node should be installed
 ```
-npm run serve
+  $ npm install
 ```
 
-### Compiles and minifies for production
+## Run
 ```
-npm run build
-```
-
-### Run your tests
-```
-npm run test
+  $ npm install
+  $ npm run serve
 ```
 
-### Lints and fixes files
+## Run tests
 ```
-npm run lint
+  $ npm run test:unit
 ```
+* The app will start on port 8080.
